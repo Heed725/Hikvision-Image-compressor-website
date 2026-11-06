@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Crop and compress face photos for Hikvision terminals. Private, browser-based JPEG compression under 200 KB with batch and ZIP downloads.">
+  <meta name="theme-color" content="#116b60">
+  <title>Hikvision Photo Prep — crop, compress, download</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="topbar wrap">
+    <a class="brand" href="./" aria-label="Hikvision Photo Prep home"><span class="brand-mark" aria-hidden="true">⌗</span><span>PHOTO<span class="brand-light">PREP</span><small>FOR HIKVISION TERMINALS</small></span></a>
+    <div class="header-right"><span class="privacy"><span aria-hidden="true">●</span> Photos stay on your device</span><a href="https://github.com/Heed725/Hikvision-Image-compressor-website" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a></div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <div><p class="eyebrow">LESS FILE SIZE. MORE FACE.</p><h1>A better fit for<br>your face terminal.</h1><p class="intro-copy">Turn everyday photos into small, clear JPEGs.<br class="desktop-break"> Crop the face, check the size, and download.</p></div>
+      <div class="specs" aria-label="Default export settings"><div><strong>&lt;200<span> KB</span></strong><small>FILE SIZE LIMIT</small></div><div><strong>640<span> × </span>800</strong><small>DEFAULT PIXELS</small></div><div><strong>JPG</strong><small>OUTPUT FORMAT</small></div></div>
+    </section>
+
+    <section class="workspace" aria-label="Photo preparation workspace">
+      <aside class="library-panel">
+        <div class="panel-heading"><div><span class="step">01</span><h2>Your photos</h2></div><span id="photo-count" class="count">0 photos</span></div>
+        <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+        <button id="drop-zone" class="drop-zone" type="button"><span class="upload-icon" aria-hidden="true">↥</span><strong>Drop photos here</strong><span>or <u>browse files</u></span><small>JPG, PNG or WebP · up to 20 MB each</small></button>
+        <div class="queue-toolbar"><p id="queue-summary">Add one photo or a whole batch.</p><button id="clear-all" class="text-button" hidden>Clear all</button></div>
+        <div id="photo-list" class="photo-list" aria-label="Uploaded photos"></div>
+        <div id="empty-queue" class="empty-queue"><span aria-hidden="true">▧</span><p>Your photos will appear here.</p><button id="demo" class="text-button">Try a sample first <span aria-hidden="true">↗</span></button></div>
+        <div class="local-note"><span aria-hidden="true">◈</span><p><strong>Private by design</strong><br>No uploads, accounts or photo storage.</p></div>
+      </aside>
+
+      <section class="editor-panel" aria-label="Crop editor">
+        <div class="panel-heading editor-heading"><div><span class="step">02</span><h2>Frame &amp; export</h2></div><span id="editor-filename" class="editor-filename">Select a photo to begin</span></div>
+        <div class="editor-body">
+          <div class="preview-column">
+            <div id="preview-stage" class="preview-stage">
+              <div id="placeholder" class="placeholder"><svg viewBox="0 0 240 300" aria-hidden="true"><path class="frame-line" d="M16 68V20h48m112 0h48v48m0 164v48h-48m-112 0H16v-48"/><ellipse class="face-outline" cx="120" cy="128" rx="58" ry="77"/><path class="face-outline" d="M33 280c2-63 37-82 87-82s85 19 87 82"/><path class="guide-line" d="M41 116h158M120 38v210"/></svg><strong>Make the face the focus.</strong><p>One person, facing the camera.</p></div>
+              <canvas id="crop-canvas" width="640" height="800" tabindex="0" aria-label="Photo crop. Drag to move. Use arrow keys to adjust position, plus and minus to zoom." hidden></canvas>
+              <div id="guide-overlay" class="guide-overlay" hidden><div class="oval"></div><i></i><span>Eye line</span></div>
+              <span class="preview-badge" id="preview-badge" hidden>DRAG TO POSITION</span>
+            </div>
+            <div class="preview-tools"><label><input id="show-guide" type="checkbox" checked> Face guide</label><button id="rotate" class="text-button" disabled>↻ Rotate</button><button id="reset" class="text-button" disabled>Reset</button></div>
+          </div>
+          <div class="controls-column">
+            <div class="field"><label for="preset">Output size</label><select id="preset"><option value="640x800">640 × 800 · Portrait</option><option value="480x640">480 × 640 · Portrait</option><option value="640x480">640 × 480 · Landscape</option><option value="800x1000">800 × 1000 · Portrait</option><option value="original">Original proportions · no crop</option></select><small>Choose the dimensions your terminal requires.</small></div>
+            <div class="field"><div class="label-row"><label for="zoom">Zoom</label><output id="zoom-value">1.40×</output></div><input id="zoom" type="range" min="1" max="4" step="0.01" value="1.4" disabled><div class="range-labels"><span>Wider</span><span>Closer</span></div></div>
+            <div class="field"><div class="label-row"><label for="brightness">Brightness</label><output id="brightness-value">100%</output></div><input id="brightness" type="range" min="70" max="140" value="100" disabled></div>
+            <div class="export-card"><div class="label-row"><span>JPEG output</span><span id="size-status" class="status neutral">Waiting</span></div><strong id="output-size">— <span>KB</span></strong><p id="output-detail">Aiming below 195 KB, with room under the 200 KB limit.</p><div class="size-meter"><span id="size-meter-fill"></span></div><div class="range-labels"><span>0 KB</span><span>200 KB limit</span></div></div>
+            <button id="download-one" class="button primary" disabled><span aria-hidden="true">↓</span> Download JPEG</button>
+            <p class="edit-note">Changes are saved automatically for each photo.</p>
+          </div>
+        </div>
+        <div class="batch-bar"><div><strong id="batch-heading">One photo or one hundred.</strong><p id="batch-detail">Download your prepared photos together.</p></div><button id="download-all" class="button secondary" disabled>↓ Download all (.zip)</button></div>
+      </section>
+    </section>
+
+    <section class="tips" aria-label="Tips for a better face photo"><div><span>01 / FRAME</span><h3>Keep one face in view.</h3><p>Crop out other people. Keep the entire head visible and the face near the centre.</p></div><div><span>02 / LIGHT</span><h3>Let the eyes be seen.</h3><p>Face the light. Avoid shadows, strong backlighting and reflections on glasses.</p></div><div><span>03 / CHECK</span><h3>Match your machine.</h3><p>Model requirements vary. A smaller file does not guarantee that a terminal will accept the face.</p></div></section>
+    <details class="help"><summary>Still getting “uploading image failed”?</summary><p>Check the exact model’s photo requirements, required dimensions, employee ID and upload method. Try a new, well-lit photo taken straight on, or enrol directly on the terminal. Some terminals require a minimum file size (often 60 KB), specific file names for batch imports, or stricter face quality. This tool flags files below 60 KB. It cannot test recognition or communicate with your machine.</p><p><a href="https://enpinfo.hikvision.com/unzip/20201102205526_84041_doc/GUID-80ABCE8D-68A1-4E6A-8547-32364ABFD437.html" target="_blank" rel="noopener">Hikvision photo upload guidance ↗</a></p></details>
+  </main>
+  <footer class="wrap"><span>Built by <a href="https://github.com/Heed725" target="_blank" rel="noopener">Heed725</a></span><span>Independent tool · Not affiliated with Hikvision</span><span>Local processing. Clear results.</span></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
